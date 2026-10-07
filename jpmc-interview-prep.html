@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JPMC Interview Cheat Sheet · Michael Legemah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500;600&family=Raleway:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #2d2a2e;
+  --bg-deep:   #221f22;
+  --bg-card:   #3a3640;
+  --bg-surface:#332f34;
+  --border:    rgba(255,255,255,0.07);
+  --border-md: rgba(255,255,255,0.13);
+  --yellow:  #ffd866;
+  --pink:    #ff6188;
+  --cyan:    #78dce8;
+  --orange:  #fc9867;
+  --green:   #a9dc76;
+  --purple:  #ab9df2;
+  --text:    #fcfcfa;
+  --soft:    #c1b8c8;
+  --muted:   #78dce8;
+  --font-serif: 'Raleway', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono:  'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans:  'Outfit', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --comment: #9d93a6;
+
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+/* The brand is dark-only; keep it dark whatever the viewer's setting. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
+:root[data-theme="dark"] { color-scheme: dark; }
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+*, *::before, *::after { box-sizing: inherit; }
+
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-sans); font-weight: 300; font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; border-radius: 4px; }
+strong, b { font-weight: 500; color: var(--text); }
+code { font-family: var(--font-mono); font-size: .86em; color: var(--yellow); background: var(--bg-deep); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- top bar ---------- */
+.topbar { border-bottom: 1px solid var(--border); background: var(--bg-deep); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-family: var(--font-serif); font-weight: 700; letter-spacing: .01em; }
+.brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-md); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; color: var(--yellow); }
+.topbar .status { font-family: var(--font-mono); font-size: 12.5px; color: var(--green); }
+
+/* ---------- hero ---------- */
+.hero { padding: 64px 0 36px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.kicker { font-family: var(--font-mono); font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+h1 { font-family: var(--font-serif); font-weight: 800; font-size: clamp(38px, 5.6vw, 64px); line-height: 1.03; letter-spacing: -.02em; margin: 0 0 22px; }
+h1 em { font-style: italic; font-weight: 500; color: var(--yellow); }
+.thesis { font-family: var(--font-serif); font-weight: 500; font-style: italic; font-size: clamp(19px, 2vw, 22px); line-height: 1.45; color: var(--text); border-left: 3px solid var(--green); padding-left: 16px; margin: 0 0 22px; max-width: 44ch; }
+.lede { color: var(--soft); max-width: 48ch; margin: 0; }
+
+/* the one bold element: the interview as a code window */
+.window { background: var(--bg-deep); border: 1px solid var(--border-md); border-radius: 14px; overflow: hidden; }
+.window-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 12.5px; color: var(--soft); }
+.window-head i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.window-head .fname { margin-left: 10px; }
+.window pre { margin: 0; }
+.ivw { padding: 18px 20px 20px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.75; overflow-x: auto; color: var(--text); }
+.ivw .kw { color: var(--pink); } .ivw .k { color: var(--cyan); } .ivw .s { color: var(--yellow); } .ivw .n { color: var(--purple); } .ivw .c { color: var(--comment); font-style: italic; } .ivw .f { color: var(--green); }
+.window-foot { padding: 10px 16px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 12.5px; color: var(--green); }
+
+/* ---------- product loop ---------- */
+.loop { padding: 8px 0 40px; }
+.loop h2 { font-family: var(--font-serif); font-weight: 700; font-size: 17px; margin: 0 0 12px; color: var(--soft); }
+.loop ol { list-style: none; counter-reset: s; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
+.loop li { counter-increment: s; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 10px 12px; font-size: 14px; line-height: 1.35; color: var(--soft); }
+.loop li::before { content: counter(s); display: block; font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.loop li.act { border-color: rgba(255,216,102,.5); color: var(--text); }
+.loop li.act::before { color: var(--yellow); }
+.loop .anchors { margin: 14px 0 0; color: var(--soft); font-size: 15.5px; max-width: 80ch; }
+
+/* ---------- toolbar ---------- */
+.toolbar { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-block: 1px solid var(--border); padding-top: env(safe-area-inset-top, 0px); top: env(safe-area-inset-top, 0px); }
+.toolbar .wrap { display: flex; align-items: center; gap: 10px; padding-block: 10px; }
+.toolbar nav { display: flex; gap: 4px; overflow-x: auto; flex: 1 1 auto; scrollbar-width: none; }
+.toolbar nav::-webkit-scrollbar { display: none; }
+.toolbar nav a { flex: none; color: var(--soft); text-decoration: none; font-size: 14.5px; padding: 6px 11px; border-radius: 999px; border: 1px solid transparent; }
+.toolbar nav a:hover { color: var(--text); border-color: var(--border-md); }
+.toolbar nav a.on { color: var(--bg-deep); background: var(--yellow); font-weight: 500; }
+.btn { flex: none; background: var(--bg-card); color: var(--text); border: 1px solid var(--border-md); border-radius: 8px; padding: 7px 13px; font: inherit; font-size: 14px; cursor: pointer; }
+.btn:hover { border-color: var(--soft); }
+.btn[aria-pressed="true"] { background: var(--orange); color: var(--bg-deep); border-color: var(--orange); font-weight: 500; }
+
+/* ---------- sections ---------- */
+.sec { padding: 56px 0 8px; }
+.sec-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 18px; align-items: baseline; margin-bottom: 22px; }
+.sec-num { font-family: var(--font-mono); font-size: 14px; color: var(--muted); }
+.sec h2 { font-family: var(--font-serif); font-weight: 800; font-size: clamp(26px, 3.2vw, 34px); line-height: 1.15; letter-spacing: -.01em; margin: 0; }
+.sec-lead { grid-column: 2; color: var(--soft); margin: 4px 0 0; max-width: 70ch; }
+h3.sub { font-family: var(--font-serif); font-weight: 700; font-size: 20px; margin: 34px 0 12px; }
+p.note { color: var(--soft); max-width: 72ch; }
+
+/* pitch */
+.pitch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.say { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; }
+.say .lbl { display: block; font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+.say p { margin: 0; font-size: 18px; line-height: 1.6; font-weight: 400; color: var(--text); }
+.say.short p { font-family: var(--font-serif); font-weight: 500; font-style: italic; font-size: clamp(20px, 2.2vw, 24px); line-height: 1.45; }
+.say p::before { content: "\201C"; color: var(--yellow); font-family: var(--font-serif); font-weight: 800; margin-right: 2px; font-style: normal; }
+.say p::after { content: "\201D"; color: var(--yellow); font-family: var(--font-serif); font-weight: 800; margin-left: 1px; font-style: normal; }
+
+.reminders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.reminder { border-left: 3px solid var(--c, var(--purple)); background: var(--bg-surface); border-radius: 0 10px 10px 0; padding: 16px 20px; }
+.reminder h4 { font-family: var(--font-serif); font-size: 17px; font-weight: 700; margin: 0 0 6px; color: var(--c, var(--purple)); line-height: 1.3; }
+.reminder p { margin: 0; color: var(--soft); font-size: 15.5px; }
+
+/* tables */
+.tbl-scroll { overflow-x: auto; border: 1px solid var(--border-md); border-radius: 12px; background: var(--bg-deep); }
+table.t { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 15px; }
+.t th, .t td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.t thead th { font-family: var(--font-mono); font-weight: 400; font-size: 12.5px; color: var(--muted); }
+.t tbody tr:last-child td, .t tbody tr:last-child th { border-bottom: 0; }
+.t td { color: var(--soft); }
+.t td:first-child, .t th[scope="row"] { color: var(--text); font-weight: 400; }
+
+/* collapsible cards (questions + stories) */
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.card, .card-body { min-width: 0; }
+.card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; }
+.card[open] { border-color: var(--border-md); }
+.card > summary { list-style: none; cursor: pointer; padding: 20px 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 20px; }
+.card > summary::-webkit-details-marker { display: none; }
+.meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+.meta .era { color: var(--soft); }
+.card h3 { font-family: var(--font-serif); font-weight: 700; font-size: clamp(20px, 2.3vw, 24px); line-height: 1.25; margin: 0; }
+.toggle { align-self: start; font-family: var(--font-mono); font-size: 12.5px; color: var(--soft); border: 1px solid var(--border-md); border-radius: 6px; padding: 3px 9px; white-space: nowrap; }
+.card[open] .toggle .o { display: none; }
+.card:not([open]) .toggle .c { display: none; }
+.card-body { padding: 4px 24px 24px; border-top: 1px solid var(--border); }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; }
+.beat { margin: 20px 0 0; max-width: 72ch; }
+.beat h4 { font-family: var(--font-serif); font-weight: 700; font-size: 16px; margin: 0 0 8px; }
+.beat p { margin: 0 0 10px; color: var(--soft); }
+.steps, .bul { margin: 0; padding-left: 22px; color: var(--soft); }
+.steps li, .bul li { margin: 0 0 8px; padding-left: 4px; }
+.steps li::marker { font-family: var(--font-mono); color: var(--muted); font-size: 14px; }
+.bul li::marker { color: var(--muted); }
+aside.trade { padding-top: 20px; }
+.trade h4 { font-family: var(--font-serif); font-weight: 700; font-size: 16px; margin: 0 0 12px; }
+.signal { border-left: 3px solid var(--c, var(--cyan)); padding: 2px 0 2px 12px; margin: 0 0 14px; }
+.signal .k { font-family: var(--font-mono); font-size: 12px; color: var(--c, var(--cyan)); display: block; margin-bottom: 2px; }
+.signal p { margin: 0; font-size: 15px; color: var(--text); line-height: 1.5; }
+.tieback { margin: 16px 0 0; background: var(--bg-deep); border-radius: 10px; padding: 12px 16px; color: var(--soft); font-size: 15.5px; max-width: 72ch; }
+.tieback b { font-family: var(--font-mono); font-weight: 400; font-size: 12.5px; color: var(--green); display: block; margin-bottom: 2px; }
+
+/* diagram */
+.diagram { margin: 18px 0 4px; background: var(--bg-deep); border: 1px solid var(--border-md); border-radius: 12px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.diagram figcaption { padding: 10px 16px 12px; border-top: 1px solid var(--border); font-size: 14.5px; color: var(--soft); }
+.dg-box { fill: var(--bg-surface); stroke: rgba(255,255,255,.18); stroke-width: 1.25; }
+.dg-box.hot { fill: rgba(255,216,102,.09); stroke: var(--yellow); stroke-width: 2; }
+.dg-name { font-family: var(--font-sans); font-weight: 600; font-size: 14px; fill: var(--text); }
+.dg-line { font-family: var(--font-sans); font-weight: 400; font-size: 12.5px; fill: var(--soft); }
+.dg-title { font-family: var(--font-serif); font-weight: 700; font-size: 16px; fill: var(--text); }
+.dg-edge { fill: none; stroke: #8a8191; stroke-width: 1.25; }
+.dg-edge.loop { stroke: var(--green); stroke-dasharray: 4 4; }
+.dg-edge.fail { stroke: var(--pink); }
+.dg-lbl { font-family: var(--font-mono); font-size: 11.5px; fill: var(--soft); }
+.dg-lbl.ok { fill: var(--green); } .dg-lbl.bad { fill: var(--pink); }
+
+/* STAR */
+.hook { grid-column: 1 / -1; margin: 6px 0 0; font-size: 17.5px; line-height: 1.55; color: var(--text); max-width: 74ch; font-weight: 400; }
+.pr { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); margin-top: 10px; border: 1px solid var(--border-md); border-radius: 10px; overflow: hidden; }
+.pr > div { padding: 12px 16px; }
+.pr > div + div { border-left: 1px solid var(--border-md); }
+.pr .lbl { display: block; font-family: var(--font-mono); font-size: 12px; margin-bottom: 3px; }
+.pr .prob { background: rgba(255,97,136,.07); } .pr .prob .lbl { color: var(--pink); }
+.pr .res { background: rgba(169,220,118,.07); } .pr .res .lbl { color: var(--green); }
+.pr p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--text); font-weight: 400; }
+.results { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.results li { background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--soft); font-size: 15.5px; }
+.results li b { font-family: var(--font-mono); font-weight: 500; color: var(--yellow); margin-right: 6px; }
+.stack { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+.stack span { font-family: var(--font-mono); font-size: 11.5px; color: var(--soft); background: var(--bg-card); border-radius: 5px; padding: 3px 7px; }
+.gap { color: var(--orange); background: rgba(252,152,103,.1); border: 1px dashed rgba(252,152,103,.55); border-radius: 5px; padding: 0 5px; font-family: var(--font-mono); font-size: .84em; font-weight: 400; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.est { font-family: var(--font-mono); font-size: .74em; color: var(--purple); border: 1px solid rgba(171,157,242,.5); border-radius: 4px; padding: 0 5px; margin-left: 4px; vertical-align: .1em; white-space: nowrap; }
+body.gaps-only .card-body p, body.gaps-only .results li, body.gaps-only .hook, body.gaps-only .pr p, body.gaps-only .bul li { color: rgba(193,184,200,.35); }
+body.gaps-only .gap { color: var(--orange); background: rgba(252,152,103,.22); border-style: solid; }
+
+/* code */
+.codewin { margin: 14px 0 6px; }
+.codewin pre[class*="language-"] { margin: 0; padding: 16px 18px; overflow-x: auto; background: var(--bg-deep); font-family: var(--font-mono); font-size: 13px; line-height: 1.6; tab-size: 4; color: var(--text); }
+.codewin code[class*="language-"] { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; white-space: pre; }
+.codewin .what { padding: 10px 16px 12px; border-top: 1px solid var(--border); font-size: 15px; color: var(--soft); }
+.codewin .what b { font-family: var(--font-mono); font-weight: 400; font-size: 12.5px; color: var(--green); margin-right: 6px; }
+/* Monokai Pro token palette for Prism */
+.token.comment, .token.prolog { color: var(--comment); font-style: italic; }
+.token.keyword, .token.operator, .token.important, .token.tag, .token.decorator .token.punctuation { color: var(--pink); }
+.token.string, .token.template-string, .token.char { color: var(--yellow); }
+.token.number, .token.boolean, .token.constant { color: var(--purple); }
+.token.function, .token.decorator, .token.annotation { color: var(--green); }
+.token.class-name, .token.builtin { color: var(--cyan); }
+.token.attr-name { color: var(--cyan); font-style: italic; }
+.token.punctuation { color: #939293; }
+.token.interpolation-punctuation, .token.regex { color: var(--orange); }
+.token.tag .token.punctuation { color: #939293; }
+
+/* remediation steps: a real sequence, so numbered */
+.how-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; counter-reset: h; list-style: none; padding: 0; margin: 0; }
+.pillar { counter-increment: h; background: var(--bg-surface); border-top: 3px solid var(--c); border-radius: 0 0 10px 10px; padding: 16px 18px; }
+.pillar b { font-family: var(--font-serif); font-weight: 700; color: var(--c); display: block; margin-bottom: 4px; font-size: 18px; }
+.pillar b::before { content: counter(h) "  "; font-family: var(--font-mono); font-weight: 400; font-size: 13px; color: var(--soft); }
+.pillar span { color: var(--soft); font-size: 15px; line-height: 1.5; }
+
+/* gaps */
+.gapgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.gapcard { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; }
+.gapcard h3 { font-family: var(--font-serif); font-weight: 700; font-size: 20px; margin: 0 0 4px; }
+.gapcard .have { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); margin: 0 0 12px; }
+.gapcard blockquote { margin: 0; border-left: 3px solid var(--orange); padding-left: 14px; color: var(--text); font-weight: 400; font-size: 16px; line-height: 1.6; }
+.cold { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+.cold span { font-family: var(--font-mono); font-size: 12px; color: var(--cyan); border: 1px solid rgba(120,220,232,.35); background: rgba(120,220,232,.08); border-radius: 5px; padding: 2px 8px; }
+.pattern { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; color: var(--soft); }
+.pattern span { background: var(--bg-deep); border: 1px solid var(--border-md); border-radius: 999px; padding: 4px 12px; color: var(--text); }
+
+/* ask */
+.asks { list-style: none; counter-reset: a; padding: 0; margin: 0; display: grid; gap: 14px; }
+.asks li { counter-increment: a; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px 18px 64px; position: relative; }
+.asks li::before { content: counter(a); position: absolute; left: 22px; top: 16px; width: 28px; height: 28px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-md); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; color: var(--yellow); }
+.asks h4 { margin: 0 0 4px; font-family: var(--font-serif); font-weight: 700; font-size: 17px; color: var(--cyan); }
+.asks p { margin: 0; color: var(--text); font-weight: 400; max-width: 80ch; }
+.close { margin: 26px 0 0; font-family: var(--font-serif); font-weight: 500; font-style: italic; font-size: clamp(19px, 2vw, 22px); line-height: 1.45; border-left: 3px solid var(--green); padding-left: 16px; max-width: 60ch; }
+
+footer { margin-top: 64px; border-top: 1px solid var(--border); background: var(--bg-deep); }
+footer .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--soft); }
+footer a { color: var(--soft); }
+
+/* one orchestrated moment: the loop steps light up in order on load */
+@media (prefers-reduced-motion: no-preference) {
+  .loop li { animation: lit .45s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 70ms + 250ms); }
+  @keyframes lit { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+
+@media (max-width: 960px) {
+  .hero-grid, .pitch, .gapgrid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .cols { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .reminders { grid-template-columns: minmax(0, 1fr); }
+  .how-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .loop ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .wrap { padding: 0 16px; }
+  .hero { padding-top: 40px; }
+  .card > summary { padding: 18px; }
+  .card-body { padding: 4px 18px 20px; }
+  .how-grid { grid-template-columns: minmax(0, 1fr); }
+  .pr { grid-template-columns: minmax(0, 1fr); } .pr > div + div { border-left: 0; border-top: 1px solid var(--border-md); }
+  .sec-head { grid-template-columns: minmax(0, 1fr); } .sec-lead { grid-column: 1; }
+  .topbar .status { display: none; }
+  .asks li { padding-left: 22px; padding-top: 54px; }
+}
+@media print {
+  .toolbar, .toggle { display: none; }
+  .card > .card-body { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="https://mleg.tech" target="_blank" rel="noopener"><span class="brand-mark">ML</span>Michael Legemah</a>
+    <span class="status">&gt;&gt;&gt; interview_mode = True</span>
+  </div>
+</header>
+
+<section class="hero" id="glance">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="kicker">jpmc_cheat_sheet.md · AI Engineer, platform engineering</p>
+      <h1>Agents that fix the build, <em>then prove it</em></h1>
+      <p class="thesis">In 45 minutes, prove you can build autonomous agents that detect, diagnose and fix build and infrastructure failures, in Python and React, on a Kafka backbone.</p>
+      <p class="lede">Every answer lands on the same spine: deterministic first, the LLM where reasoning is needed, guarded actions, verified outcomes, and a learning loop. The orange brackets are details still worth pinning down before tomorrow.</p>
+    </div>
+
+    <div class="window" aria-label="Interview logistics">
+      <div class="window-head">
+        <i style="background:var(--pink)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i>
+        <span class="fname">interview.py</span>
+      </div>
+<pre class="ivw"><span class="n">interview</span> = {
+  <span class="k">"when"</span>:   <span class="s">"Wed Oct 7, 10:30–11:15 AM ET"</span>,
+  <span class="k">"team"</span>:   <span class="s">"Pooja · Hudson Yards · onsite 5 days"</span>,
+  <span class="k">"panel"</span>:  <span class="s">"likely India-based"</span>,
+  <span class="k">"format"</span>: [<span class="s">"10–15 min intro + tech"</span>,
+             <span class="s">"~30 min live coding in an IDE"</span>],
+  <span class="k">"split"</span>:  {<span class="k">"dev"</span>: <span class="n">0.8</span>, <span class="k">"platform"</span>: <span class="n">0.2</span>},
+  <span class="k">"stack"</span>:  [<span class="s">"Python"</span>, <span class="s">"Kafka"</span>, <span class="s">"React"</span>],
+  <span class="k">"farm"</span>:   <span class="s">"on-prem, not AWS"</span>,
+}
+<span class="c"># the product: AI build-failure analysis + self-healing</span>
+<span class="kw">def</span> <span class="f">win</span>(): <span class="kw">return</span> <span class="s">"detect → diagnose → act safely → verify"</span></pre>
+      <div class="window-foot">&gt;&gt;&gt; feedback by Fri COB, Mon at the latest</div>
+    </div>
+  </div>
+</section>
+
+<section class="loop" aria-labelledby="loop-h">
+  <div class="wrap">
+    <h2 id="loop-h">The product loop to keep coming back to</h2>
+    <ol>
+      <li style="--i:0">Build fails on a node</li>
+      <li style="--i:1">Agent detects it</li>
+      <li style="--i:2">Analyzes the logs</li>
+      <li style="--i:3" class="act">Finds the root cause</li>
+      <li style="--i:4" class="act">Plans remediation</li>
+      <li style="--i:5" class="act">Uninstalls or reinstalls</li>
+      <li style="--i:6">Validates the node</li>
+      <li style="--i:7">Reruns the build</li>
+      <li style="--i:8">Records the fix</li>
+    </ol>
+    <p class="anchors">Three phrases from your resume map straight onto it: <strong>specialist agents with controlled tool execution</strong>, <strong>evaluation gates before anything touches production</strong>, and <strong>human escalation when confidence is low</strong>.</p>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="wrap">
+    <nav aria-label="Sections">
+      <a href="#pitch">Pitch</a>
+      <a href="#questions">Top 5 questions</a>
+      <a href="#star">STAR stories</a>
+      <a href="#code">Code review</a>
+      <a href="#gaps">Gaps</a>
+      <a href="#ask">Ask them</a>
+    </nav>
+    <button class="btn" id="expandAll" type="button">Open all</button>
+    <button class="btn" id="gapsBtn" type="button" aria-pressed="false">Fill-ins only</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+<!-- 1. PITCH -->
+<section class="sec" id="pitch">
+  <div class="sec-head">
+    <span class="sec-num">01</span>
+    <h2>The elevator pitch</h2>
+    <p class="sec-lead">Lead with the short version, pause, and let them pull the rest. The 30-second version is for when they say "go on".</p>
+  </div>
+
+  <div class="pitch">
+    <div class="say short">
+      <span class="lbl">10 seconds · say this first</span>
+      <p>I'm Michael. I have 13 years of software engineering experience, and I specialize in building production-grade agentic AI systems that diagnose problems and take controlled action at enterprise scale.</p>
+    </div>
+    <div class="say">
+      <span class="lbl">30 seconds · if they say go on</span>
+      <p>I'm Michael, a full-stack engineer with 13 years in Python, React and distributed systems, and the last two years focused on agentic AI in production. At AWS I architect multi-agent workflows: specialist agents that call enterprise tools, process events asynchronously, validate their own outputs, and escalate to a human when they're not confident. I also built the evaluation and CI/CD quality gates that stop a degraded agent from reaching production. Before that I built RAG pipelines for AstraZeneca clinical trials, and earlier, event-driven microservices with Terraform and RabbitMQ for defense platforms, plus a streaming analytics pipeline on Firehose. A self-healing build platform is exactly that pattern: detect, diagnose, act safely, verify.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Breadcrumbs this plants</h3>
+  <div class="tbl-scroll">
+    <table class="t">
+      <thead><tr><th scope="col">You say</th><th scope="col">They likely ask</th><th scope="col">You go to</th></tr></thead>
+      <tbody>
+        <tr><td>"Multi-agent workflows at AWS"</td><td>Tell me about your most recent project</td><td><a href="#star-a">Story A</a>, the contact-center eval gate</td></tr>
+        <tr><td>"Validate their own outputs, escalate to a human"</td><td>How do you make an agent safe to act on infra?</td><td><a href="#q2">Q2</a>, guardrails and blast radius</td></tr>
+        <tr><td>"Quality gates in CI/CD"</td><td>Have you worked with CI/CD and build pipelines?</td><td>Yes: GitLab CI, GitHub Actions, CodeBuild and a Jenkinsfile for Jenkins, plus the AI-specific gates you built (Story A)</td></tr>
+        <tr><td>"Event-driven, Firehose streaming, RabbitMQ"</td><td>Do you know Kafka?</td><td><a href="#gaps">Gap 1</a> reframing script</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub">Three reasons your background solves their pain</h3>
+  <div class="reminders">
+    <div class="reminder" style="--c:var(--yellow)"><h4>You've already built the loop</h4><p>Your AWS work is specialist agents, controlled tool execution and human escalation: the self-healing workflow with a different target system.</p></div>
+    <div class="reminder" style="--c:var(--cyan)"><h4>You make agents safe to touch infra</h4><p>Agent evals, regression detection, LLM-as-judge and blocking CI/CD gates (Jenkins included) answer the manager's real fear: an agent that "fixes" a node and breaks the farm.</p></div>
+    <div class="reminder" style="--c:var(--green)"><h4>You're full stack plus platform</h4><p>Python/FastAPI services, React/TypeScript UIs, event-driven microservices, CI/CD including Jenkins, infrastructure as code in Terraform and CloudFormation, and CloudWatch observability: the 80/20 split with no ramp-up on either side.</p></div>
+  </div>
+</section>
+
+<!-- 2. QUESTIONS -->
+<section class="sec" id="questions">
+  <div class="sec-head">
+    <span class="sec-num">02</span>
+    <h2>Top 5 predicted questions</h2>
+    <p class="sec-lead">Weighted toward the recruiter's notes. Open each for the framework and the tradeoffs to say out loud.</p>
+  </div>
+
+  <div class="cards">
+    <details class="card" id="q1" open>
+      <summary>
+        <div class="meta"><span>Q1 · system design</span><span class="era">the one they built the role around</span></div>
+        <h3>"Design an automated build-failure analysis and self-healing platform."</h3>
+        <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+      </summary>
+      <div class="card-body">
+        <figure class="diagram" style="margin-inline:0">
+          <svg viewBox="0 0 760 480" role="img" aria-label="Every fix is guarded, verified and remembered: self-healing build platform architecture">
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8a8191"/></marker>
+              <marker id="ar-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9dc76"/></marker>
+              <marker id="ar-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff6188"/></marker>
+            </defs>
+            <text class="dg-title" x="24" y="34">Every fix is guarded, verified and remembered</text>
+            <g>
+              <path class="dg-edge" d="M234 100H275" marker-end="url(#ar)"/>
+              <path class="dg-edge" d="M485 100H526" marker-end="url(#ar)"/>
+              <path class="dg-edge" d="M631 136V200" marker-end="url(#ar)"/>
+              <path class="dg-edge" d="M526 236H485" marker-end="url(#ar)"/>
+              <path class="dg-edge" d="M275 236H234" marker-end="url(#ar)"/>
+              <path class="dg-edge" d="M129 272V336" marker-end="url(#ar)"/>
+              <path class="dg-edge" d="M234 372H275" marker-end="url(#ar-g)" style="stroke:var(--green)"/>
+              <path class="dg-edge loop" d="M485 356H505V256H526" marker-end="url(#ar-g)"/>
+              <path class="dg-edge" d="M631 272V336" marker-end="url(#ar)"/>
+              <path class="dg-edge fail" d="M129 408V436H631V408" marker-end="url(#ar-p)"/>
+            </g>
+            <g><rect class="dg-box" x="24" y="64" width="210" height="72" rx="8"/><text class="dg-name" x="36" y="88">Jenkins + build farm</text><text class="dg-line" x="36" y="108">failed builds, node metrics,</text><text class="dg-line" x="36" y="124">logs keyed by build ID</text></g>
+            <g><rect class="dg-box" x="275" y="64" width="210" height="72" rx="8"/><text class="dg-name" x="287" y="88">Kafka topics</text><text class="dg-line" x="287" y="108">build.events, node.metrics</text><text class="dg-line" x="287" y="124">partition key = node ID</text></g>
+            <g><rect class="dg-box" x="526" y="64" width="210" height="72" rx="8"/><text class="dg-name" x="538" y="88">Triage agent</text><text class="dg-line" x="538" y="108">known signature? fast path</text><text class="dg-line" x="538" y="124">novel? hand to the LLM</text></g>
+            <g><rect class="dg-box" x="526" y="200" width="210" height="72" rx="8"/><text class="dg-name" x="538" y="224">Diagnosis agent</text><text class="dg-line" x="538" y="244">error window + node diff</text><text class="dg-line" x="538" y="260">+ similar past incidents</text></g>
+            <g><rect class="dg-box hot" x="275" y="200" width="210" height="72" rx="8"/><text class="dg-name" x="287" y="224">Remediation planner</text><text class="dg-line" x="287" y="244" style="fill:var(--text)">allow-listed runbook steps</text><text class="dg-line" x="287" y="260" style="fill:var(--text)">risky step? human approves</text></g>
+            <g><rect class="dg-box" x="24" y="200" width="210" height="72" rx="8"/><text class="dg-name" x="36" y="224">Executor tools</text><text class="dg-line" x="36" y="244">idempotent, rate-limited,</text><text class="dg-line" x="36" y="260">audited, no raw shell</text></g>
+            <g><rect class="dg-box" x="24" y="336" width="210" height="72" rx="8"/><text class="dg-name" x="36" y="360">Validate + rerun</text><text class="dg-line" x="36" y="380">node health checks,</text><text class="dg-line" x="36" y="396">then rerun the build</text></g>
+            <g><rect class="dg-box" x="275" y="336" width="210" height="72" rx="8"/><text class="dg-name" x="287" y="360">Resolution memory</text><text class="dg-line" x="287" y="380">fix + evidence stored,</text><text class="dg-line" x="287" y="396">recalled by diagnosis</text></g>
+            <g><rect class="dg-box" x="526" y="336" width="210" height="72" rx="8"/><text class="dg-name" x="538" y="360">React dashboard</text><text class="dg-line" x="538" y="380">traces, approvals, MTTR,</text><text class="dg-line" x="538" y="396">escalations to on-call</text></g>
+            <text class="dg-lbl ok" x="254" y="364" text-anchor="middle">pass</text>
+            <text class="dg-lbl" x="641" y="308">reasoning trace</text>
+            <text class="dg-lbl bad" x="380" y="458" text-anchor="middle">fail: escalate with full context</text>
+          </svg>
+          <figcaption>Whiteboard it in this order: the top row is detection, the middle row is reasoning and guarded action (each hop can be its own Kafka topic), and the bottom row closes the loop by verifying, remembering and escalating.</figcaption>
+        </figure>
+        <div class="cols">
+          <div class="beat">
+            <h4>Framework: talk in this order</h4>
+            <ol class="steps">
+              <li><strong>Ingest.</strong> Jenkins and node agents emit <code>build.failed</code> and node health metrics to Kafka; logs land in Splunk or object storage, keyed by build ID.</li>
+              <li><strong>Triage, cheap first.</strong> A deterministic classifier matches known failure signatures (regex, error codes, exit status) before any LLM call. Most build failures repeat.</li>
+              <li><strong>Diagnose.</strong> The agent pulls only the error window (error ± N lines, not a 200 MB log), node metrics and recent changes, then retrieves similar past incidents.</li>
+              <li><strong>Remediate.</strong> A planner proposes steps from an allow-listed runbook catalogue (clear cache, reinstall toolchain, reimage, drain); an executor runs them through tools, never raw shell.</li>
+              <li><strong>Validate and rerun.</strong> Health checks, then rerun the build. Success writes the resolution back to memory; failure escalates with full context.</li>
+              <li><strong>UI.</strong> A React dashboard of failures, agent reasoning traces, approve/reject for risky actions, and MTTR trends.</li>
+            </ol>
+          </div>
+          <aside class="trade">
+            <h4>Tradeoffs to say out loud</h4>
+            <div class="signal" style="--c:var(--yellow)"><span class="k">latency vs accuracy</span><p>Signature match in milliseconds handles repeats; the LLM only sees novel failures.</p></div>
+            <div class="signal" style="--c:var(--cyan)"><span class="k">cost vs context window</span><p>Error-window extraction plus retrieval beats stuffing whole logs: cheaper, with less hallucination.</p></div>
+            <div class="signal" style="--c:var(--pink)"><span class="k">autonomy vs blast radius</span><p>Auto-run low-risk, reversible actions; human approval for reimage, drain, or anything touching many nodes.</p></div>
+            <div class="signal" style="--c:var(--green)"><span class="k">on-prem constraint</span><p>Azure OpenAI goes through an approved gateway; deterministic paths keep working if the model is down.</p></div>
+          </aside>
+        </div>
+      </div>
+    </details>
+
+    <details class="card" id="q2">
+      <summary>
+        <div class="meta"><span>Q2 · agentic AI</span><span class="era">agent-to-agent + safety</span></div>
+        <h3>"How do agents communicate, and how do you keep autonomous remediation safe?"</h3>
+        <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+      </summary>
+      <div class="card-body cols">
+        <div class="beat">
+          <h4>Framework</h4>
+          <ul class="bul">
+            <li><strong>Two communication styles.</strong> Orchestrated (a supervisor or graph like LangGraph or AutoGen GroupChat routes between agents, good for one incident's reasoning) and choreographed (agents react to Kafka events, good for decoupling and scale). Use both: Kafka between stages, a graph inside diagnosis.</li>
+            <li><strong>Typed contracts.</strong> Agents exchange schema-validated JSON, not free text. Each message carries incident ID, confidence and evidence.</li>
+            <li><strong>Safety layers.</strong> Tool allow-list, parameter validation, dry-run mode, rate limits per node and per farm, a circuit breaker if remediation success drops, idempotency keys so a replayed event never reinstalls twice, and a full audit trail.</li>
+            <li><strong>Confidence gating.</strong> Below threshold, or a novel failure class, goes to a human via the React UI or a ticket.</li>
+          </ul>
+        </div>
+        <aside class="trade">
+          <h4>Tradeoff to say out loud</h4>
+          <div class="signal" style="--c:var(--orange)"><span class="k">specialization vs moving parts</span><p>More agents means sharper roles but more latency, cost and failure points. Start with three or four (triage, diagnose, remediate, validate) and add one only when evals show a gap.</p></div>
+        </aside>
+      </div>
+    </details>
+
+    <details class="card" id="q3">
+      <summary>
+        <div class="meta"><span>Q3 · behavioral</span><span class="era">the recruiter flagged both halves</span></div>
+        <h3>"Your most recent AI solution in production: is it still running? And one that didn't make it, and why?"</h3>
+        <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+      </summary>
+      <div class="card-body cols">
+        <div class="beat">
+          <h4>Framework</h4>
+          <p>Use <a href="#star-a">Story A</a>. Answer "still running" directly, then the non-production story in three beats: what you built, the evaluation signal that stopped it (accuracy, cost, latency or safety), and what you'd do differently.</p>
+          <p>Framing a project that was stopped as "the eval gate worked" is a strength, not a failure. <span class="gap">[Pick your non-production story from the story bank and name the signal that stopped it]</span></p>
+        </div>
+        <aside class="trade">
+          <h4>Tradeoff to say out loud</h4>
+          <div class="signal" style="--c:var(--yellow)"><span class="k">speed vs measurability</span><p>You don't ship an agent without a regression suite. Shipping fast only counts if you can tell whether it got better or worse.</p></div>
+        </aside>
+      </div>
+    </details>
+
+    <details class="card" id="q4">
+      <summary>
+        <div class="meta"><span>Q4 · troubleshooting</span><span class="era">root-cause analysis</span></div>
+        <h3>"A build fails on one node but passes on others. How do you diagnose it?"</h3>
+        <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+      </summary>
+      <div class="card-body">
+        <div class="beat">
+          <h4>The RCA ladder</h4>
+          <ol class="steps">
+            <li><strong>Scope.</strong> One node or a pool? Since when? Correlate with the last change: OS patch, toolchain version, config push, new job type.</li>
+            <li><strong>Diff the node</strong> against a healthy one: disk space and inodes, memory, CPU steal, toolchain and dependency versions, env vars, file permissions, network and DNS to the artifact repo.</li>
+            <li><strong>Read the evidence.</strong> The first error in the log, not the last; exit codes; Grafana or Dynatrace metrics around the failure time.</li>
+            <li><strong>Reproduce and fix.</strong> Rerun pinned to that node vs a healthy node; apply the smallest reversible fix; validate; rerun.</li>
+            <li><strong>Prevent.</strong> Add a signature to the classifier and a health check so the agent catches it next time.</li>
+          </ol>
+        </div>
+        <p class="tieback"><b>tie it back</b>"This ladder is exactly what I'd encode into the diagnosis agent's tools." Name the tools you actually used (CloudWatch logs and dashboards) and say Grafana or Dynatrace play the same role. Then cite the AstraZeneca OCR bottleneck: the numbers said embedding was the risk; the observability data said OCR.</p>
+      </div>
+    </details>
+
+    <details class="card" id="q5">
+      <summary>
+        <div class="meta"><span>Q5 · engineering</span><span class="era">the manager named Python + Kafka</span></div>
+        <h3>"How would you use Kafka in this system?"</h3>
+        <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+      </summary>
+      <div class="card-body cols">
+        <div class="beat">
+          <h4>Framework</h4>
+          <ul class="bul">
+            <li><strong>Topics:</strong> <code>build.events</code>, <code>node.metrics</code>, <code>incident.diagnosed</code>, <code>remediation.requested</code>, <code>remediation.result</code>, plus a dead-letter topic.</li>
+            <li><strong>Partition key = node ID.</strong> Every event for one node stays in order, so two agents never remediate the same node concurrently.</li>
+            <li><strong>Delivery.</strong> At-least-once with idempotent consumers (dedupe on event ID); commit offsets manually, only after the action is recorded.</li>
+            <li><strong>Consumer groups.</strong> One group per agent role; scale each horizontally.</li>
+            <li><strong>Replay.</strong> The log is the audit trail, and it lets you rerun an improved agent against last week's failures as an offline eval.</li>
+          </ul>
+        </div>
+        <aside class="trade">
+          <h4>Tradeoffs to say out loud</h4>
+          <div class="signal" style="--c:var(--cyan)"><span class="k">ordering vs parallelism</span><p>More partitions, more throughput; ordering holds only within a key.</p></div>
+          <div class="signal" style="--c:var(--purple)"><span class="k">exactly-once vs simplicity</span><p>Prefer idempotency over Kafka transactions unless a write spans topics.</p></div>
+        </aside>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- 3. STAR -->
+<section class="sec" id="star">
+  <div class="sec-head">
+    <span class="sec-num">03</span>
+    <h2>STAR system stories</h2>
+    <p class="sec-lead">Numbers pulled from your story bank. Each follows the recruiter's shape: business problem, your contribution, at least one concrete challenge.</p>
+  </div>
+
+  <div class="cards">
+    <details class="card" id="star-a" open>
+      <summary>
+        <div class="meta"><span>Story A · AWS Generative AI Innovation Center</span><span class="era">State Farm · U.S. Bank · shipped in production</span></div>
+        <h3>Multi-agent contact center: the eval gate that took hallucinations to zero</h3>
+        <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+        <p class="hook">Best for "most recent project", "have you built agents", "is it still in production", and anything about CI/CD gates.</p>
+        <div class="pr"><div class="prob"><span class="lbl">Situation &amp; task</span><p>An insurer and a bank wanted to automate a contact center peaking at 5,000 concurrent calls, but any prompt or knowledge-base change could quietly put a wrong answer in front of a customer. You owned the agent architecture and the gate that proves a change is safe.</p></div><div class="res"><span class="lbl">Result</span><p>Pre-production hallucinations cut from 12% to zero, every change checked by a ~4-minute blocking gate.</p></div></div>
+      </summary>
+      <div class="card-body cols">
+        <div>
+          <div class="beat">
+            <h4>Action: your engineering choices</h4>
+            <ul class="bul">
+              <li><strong>Specialist agents over one prompt.</strong> Lex for simple intents; complex turns escalate through Lambda and the Strands SDK to Bedrock models, RAG over knowledge bases, and customer APIs via AgentCore Gateway over MCP, with Guardrails on top.</li>
+              <li><strong>CI-vendor agnostic.</strong> The gate runs on GitLab CI, GitHub Actions and CodeBuild, and you set up a Jenkinsfile for Jenkins alongside them, so the same eval pipeline would drop into JPMC's Jenkins-based builds.</li>
+              <li><strong>Observability and reproducible infra.</strong> CloudWatch log groups, dashboards and alarms (policy violations, Lambda and pipeline errors) gave the on-call view, the Grafana-style role. All infrastructure was provisioned with CloudFormation so any environment could be rebuilt end to end, the same discipline as your Terraform work at Zivaro.</li>
+              <li><strong>Evaluation-driven CI/CD.</strong> Each run scores every case three ways: DeepEval judge metrics, a RAG claims checker for groundedness, and a retrieval check for recall and precision. ~200 cases × 3 checks × ~2 agents = 1,200 evaluation calls per change.</li>
+              <li><strong>Traceability.</strong> Every run is tied to the exact commit or upload and a pinned model and prompt version, so a score drop always has an owner.</li>
+              <li><strong>A queue between "create run" and "execute run".</strong> SQS let GitLab CI, GitHub Actions, CodeBuild and a Jenkinsfile for Jenkins consume from one place, and held the backlog during a real CI outage.</li>
+              <li><strong>Conversation analytics on a stream.</strong> Instrumented conversation logs, Contact Lens data and Contact Trace Records flow through Amazon Data Firehose (KMS customer-managed key, Lambda transform) into an S3 data lake, with Glue, Athena and Comprehend on top, so product owners explore it in QuickSight. Your closest hands-on streaming experience to Kafka; see <a href="#gaps">Gap 1</a>.</li>
+              <li><strong>Structured Guardrails results,</strong> not pass/fail, to tell "ungrounded answer" apart from "Guardrails blocked it". Different fixes; the most useful debugging decision.</li>
+            </ul>
+          </div>
+          <div class="beat">
+            <h4>Challenge to name</h4>
+            <p><strong>The pushback.</strong> The delivery lead pushed back: there was a customer deadline, and the four-minute gate was adding friction to the release cycle.</p>
+            <p><strong>What you did.</strong> You acknowledged the deadline, then reframed the decision around risk. If an evaluation catches a regression, the alternative is hours or days debugging a production issue the pipeline could have stopped in four minutes. You proposed a tiered gate: keep it <strong>blocking for high-risk changes</strong> and let <strong>low-risk changes use the smoke suite</strong>, so not every change is treated the same.</p>
+            <p><strong>The outcome.</strong> A faster path without weakening the quality bar, and blocking stayed the default. You also made time to teach teammates how the pipeline worked, so it would stick after you rolled off.</p>
+            <p>And the honest lesson: a big eval run once competed with live calls on Bedrock during a peak window. You'd isolate eval traffic with separate rate limits, and design the smoke-versus-full split in, from day one.</p>
+            <p class="tieback"><b>say it in 20 seconds</b>"The delivery lead pushed back because of a customer deadline. I agreed the deadline mattered, but I reframed it around risk: a regression the gate catches in four minutes can cost days in production. So I proposed a tiered gate, blocking for high-risk changes and the smoke suite for low-risk ones. We got a faster path, the same quality bar, and blocking stayed the default."</p>
+          </div>
+        </div>
+        <aside class="trade">
+          <h4>Results</h4>
+          <ul class="results">
+            <li><b>12% → 0%</b>pre-production hallucination rate</li>
+            <li><b>~4 min</b>blocking gate, 1,200 eval calls per change</li>
+            <li><b>0 lost runs</b>during a CI outage; the queue held the backlog</li>
+            <li><b>~$20MM</b>estimated value<span class="est">estimate</span> <span class="gap">[Confirm basis]</span></li>
+          </ul>
+          <p class="tieback"><b>bridge to JPMC</b>Swap "customer call" for "failed build on node 42": specialist agents, guarded tools, a blocking gate, and a queue that survives outages.</p>
+          <div class="stack"><span>Bedrock</span><span>Strands</span><span>MCP</span><span>DeepEval</span><span>SQS</span><span>Jenkins</span><span>CloudWatch</span><span>CloudFormation</span><span>Data Firehose</span><span>QuickSight</span><span>React + AppSync</span></div>
+        </aside>
+      </div>
+    </details>
+
+    <details class="card" id="star-b">
+      <summary>
+        <div class="meta"><span>Story B · About Objects</span><span class="era">client: AstraZeneca · shipped in production</span></div>
+        <h3>Clinical-trial e-consent: a RAG pipeline from undefined requirements to production</h3>
+        <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+        <p class="hook">Best for "prototype to production", "performance troubleshooting", and "how do you handle failures in a pipeline".</p>
+        <div class="pr"><div class="prob"><span class="lbl">Situation &amp; task</span><p>Trials can't enroll a patient who can't read the consent form. Translation was slow and expensive, nobody could say the volume, and one trial's forms could never leak into another's retrieval.</p></div><div class="res"><span class="lbl">Result</span><p>Running in production at AstraZeneca, sized for ~200M tokens, re-processing only what changed, every translation human-approved. <span class="gap">[Languages and turnaround]</span></p></div></div>
+      </summary>
+      <div class="card-body cols">
+        <div>
+          <div class="beat">
+            <h4>Action: your engineering choices</h4>
+            <ul class="bul">
+              <li><strong>Turned the unknown into a number.</strong> 10,000 docs × 10 pages × 2,000 tokens ≈ 200M tokens, ~400K chunks; stakeholders could answer yes or no while you kept building.</li>
+              <li><strong>Four stages on Step Functions:</strong> Textract extract, chunk, Bedrock Titan embed, upsert into OpenSearch with records in DynamoDB.</li>
+              <li><strong>Content hashes</strong> at document and chunk level, so an amended form re-processes only changed chunks.</li>
+              <li><strong>Failures to a dead-letter queue;</strong> a document becomes searchable only once every chunk is written.</li>
+              <li><strong>Structural tenant isolation:</strong> a vector namespace per trial, scoped by IAM, so even a query-layer bug can't cross trials.</li>
+              <li><strong>Human-in-the-loop:</strong> nothing unapproved reaches a patient.</li>
+            </ul>
+          </div>
+          <div class="beat">
+            <h4>Challenge to name</h4>
+            <p>The math said embedding was the risk. The observability data said OCR was the real bottleneck. You parallelized it across documents, skipped OCR for PDFs that already had text, and raised the risk with product leadership before the client noticed.</p>
+          </div>
+        </div>
+        <aside class="trade">
+          <h4>Results</h4>
+          <ul class="results">
+            <li><b>~200M</b>tokens (~400K chunks) planned up front</li>
+            <li><b>&lt;15 min</b>to embed the full bulk load</li>
+            <li><b>100%</b>of translations human-approved</li>
+            <li><b>Changed chunks only</b>re-processed on amendment</li>
+          </ul>
+          <p class="tieback"><b>bridge to JPMC</b>DLQs, idempotent reprocessing and measuring before fixing are the same instincts a self-healing build platform needs.</p>
+          <div class="stack"><span>Step Functions</span><span>Textract</span><span>Titan</span><span>OpenSearch</span><span>DynamoDB</span><span>IAM</span></div>
+        </aside>
+      </div>
+    </details>
+  </div>
+  <p class="note"><strong>Backup for "tell me about a production failure":</strong> the CharlieCard redesign that shipped on time, passed QA, and still dropped checkout completion; you rebuilt it as a dedicated site in about six weeks. <span class="gap">[Before and after numbers]</span></p>
+</section>
+
+<!-- 4. CODE -->
+<section class="sec" id="code">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
+    <h2>Code review, debugging and hardening</h2>
+    <p class="sec-lead">The recruiter flagged microservice business logic and Kafka code as the likely live-coding targets. Expect a small Python service or consumer with planted bugs, maybe a React component rendering streamed output.</p>
+  </div>
+
+  <div class="tbl-scroll">
+    <table class="t">
+      <thead><tr><th scope="col">Likely scenario</th><th scope="col">What they're testing</th></tr></thead>
+      <tbody>
+        <tr><td>Fix a Kafka consumer that loses or double-processes messages</td><td>Offsets, idempotency, error handling, DLQ</td></tr>
+        <tr><td>Review an endpoint that triggers a remediation</td><td>Input validation, auth, command injection, idempotency</td></tr>
+        <tr><td>Speed up a log parser that loads whole files</td><td>Streaming, generators, compiled regex, memory</td></tr>
+        <tr><td>Fix a React panel that streams an LLM response</td><td>Stale state, effect cleanup, XSS, re-render cost</td></tr>
+        <tr><td>Add an LLM call to an agent step</td><td>Timeouts, retries, structured output, prompt injection from logs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub">Python: rapid review checklist</h3>
+  <div class="tbl-scroll">
+    <table class="t">
+      <thead><tr><th scope="col">Look for</th><th scope="col">Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Mutable default args (<code>def f(x=[])</code>)</td><td><code>x=None</code>, then create inside</td></tr>
+        <tr><td>Bare <code>except:</code> or swallowed errors</td><td>Catch specific exceptions, log with context, re-raise or DLQ</td></tr>
+        <tr><td><code>f.read()</code> on large logs, string <code>+=</code> in loops</td><td>Iterate lazily, <code>deque</code>, <code>"".join()</code></td></tr>
+        <tr><td><code>re.search(pattern, …)</code> inside a loop</td><td><code>re.compile</code> once at module level</td></tr>
+        <tr><td>Sequential LLM or HTTP calls in a loop</td><td><code>asyncio.gather</code> with a semaphore; a timeout on every call</td></tr>
+        <tr><td><code>pickle.loads</code>, <code>yaml.load</code>, <code>eval</code> on untrusted data</td><td><code>json.loads</code>, <code>yaml.safe_load</code>, never <code>eval</code></td></tr>
+        <tr><td><code>subprocess(..., shell=True)</code> with f-strings</td><td>Argument list, allow-listed commands, validated params</td></tr>
+        <tr><td>Endpoint with no auth or no input schema</td><td>Pydantic model plus an auth dependency</td></tr>
+        <tr><td>Log text pasted straight into a prompt</td><td>Treat it as data: delimit it, strip instructions, validate the model's output against a schema</td></tr>
+        <tr><td>Unpinned dependencies</td><td>Pinned versions, a lockfile, a vulnerability scan in CI</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="window codewin">
+    <div class="window-head"><i style="background:var(--pink)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i><span class="fname">remediation_service.py · hardened endpoint the executor calls</span></div>
+<pre class="language-python"><code class="language-python">import subprocess                                    # run fixed scripts; never with shell=True
+from enum import Enum                                # closed set of allowed values
+from fastapi import Depends, FastAPI, Header, HTTPException  # framework, DI, header param, errors
+from pydantic import BaseModel, Field                # schema validation for the request body
+
+app = FastAPI()                                      # the remediation microservice
+
+class Action(str, Enum):                             # allow-list: the agent may request only these
+    CLEAR_CACHE = "clear_cache"                      # low risk, reversible
+    REINSTALL_TOOLCHAIN = "reinstall_toolchain"      # medium risk, still scripted and reviewed
+
+RUNBOOK = {                                          # each action maps to one fixed, code-reviewed script
+    Action.CLEAR_CACHE: ["/opt/runbooks/clear_cache.sh"],
+    Action.REINSTALL_TOOLCHAIN: ["/opt/runbooks/reinstall_toolchain.sh"],
+}
+
+class RemediationRequest(BaseModel):                 # anything that fails this schema gets an automatic 422
+    node_id: str = Field(pattern=r"^[a-z0-9-]{1,64}$")  # blocks injection like "node1; rm -rf /"
+    action: Action                                   # must be one of the enum values above
+    incident_id: str = Field(max_length=64)          # doubles as the idempotency key
+
+COMPLETED: dict[str, dict] = {}                      # demo only: use Redis or a DB table in production
+
+def verify_caller(x_service_token: str = Header(...)) -&gt; str:  # reads the X-Service-Token header
+    if not is_valid_service_token(x_service_token):  # your auth helper (mTLS/OAuth in a real system)
+        raise HTTPException(status_code=401, detail="unauthorized")  # no token, no action
+    return x_service_token                           # available to the handler if needed
+
+@app.post("/remediations")                           # POST because it changes state
+def remediate(req: RemediationRequest, _: str = Depends(verify_caller)):  # auth runs before the body is used
+    if req.incident_id in COMPLETED:                 # Kafka redelivered or the agent retried
+        return COMPLETED[req.incident_id]            # return the earlier result; never act twice
+    cmd = RUNBOOK[req.action] + ["--node", req.node_id]  # argument list, so no shell parsing happens
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # bounded runtime
+    result = {"ok": proc.returncode == 0,            # success flag for the validation agent
+              "stderr": proc.stderr[-2000:]}         # truncate: don't return or log megabytes
+    COMPLETED[req.incident_id] = result              # record before returning, for idempotency
+    return result                                    # FastAPI serializes the dict to JSON</code></pre>
+    <div class="what"><b>say this</b>An allow-list beats a deny-list, the schema is the first security control, idempotency is mandatory once Kafka is involved, and every call has a timeout.</div>
+  </div>
+
+  <div class="window codewin">
+    <div class="window-head"><i style="background:var(--pink)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i><span class="fname">diagnosis_consumer.py · neither loses nor double-processes</span></div>
+<pre class="language-python"><code class="language-python">import json                                          # safe deserialization (never pickle)
+from confluent_kafka import Consumer, Producer       # standard Python Kafka client
+
+consumer = Consumer({
+    "bootstrap.servers": "kafka:9092",               # broker address
+    "group.id": "diagnosis-agent",                   # one group per agent role; add instances to scale
+    "enable.auto.commit": False,                     # BUG FIX: auto-commit can mark a message done before it's processed
+    "auto.offset.reset": "earliest",                 # a brand-new group starts from the oldest event
+})
+producer = Producer({"bootstrap.servers": "kafka:9092",
+                     "enable.idempotence": True})    # no duplicate writes on producer retries
+consumer.subscribe(["build.events"])                 # input topic, partitioned by node_id
+
+seen: set[str] = set()                               # demo dedupe store; Redis with a TTL in production
+
+try:
+    while True:                                      # long-running consume loop
+        msg = consumer.poll(1.0)                     # wait up to 1 s for the next message
+        if msg is None:                              # nothing arrived this interval
+            continue                                 # poll again
+        if msg.error():                              # broker or partition error, not a bad payload
+            print(f"kafka error: {msg.error()}")     # use structured logging in real code
+            continue                                 # the client retries transient errors itself
+        try:
+            event = json.loads(msg.value())          # bytes -&gt; dict; bad JSON raises and goes to the DLQ
+            if event["event_id"] not in seen:        # at-least-once delivery means duplicates happen
+                result = diagnose(event)             # your business logic / LLM call, with its own timeout
+                producer.produce("incident.diagnosed",   # hand off to the next agent
+                                 key=event["node_id"],   # same key keeps per-node ordering downstream
+                                 value=json.dumps(result))
+                producer.flush()                     # make sure it's written before committing input
+                seen.add(event["event_id"])          # mark processed only after the output is durable
+        except Exception:                            # poison message: don't block the partition forever
+            producer.produce("build.events.dlq", key=msg.key(), value=msg.value())  # park for review
+            producer.flush()                         # DLQ write must land before we move on
+        consumer.commit(message=msg, asynchronous=False)  # commit only after success or DLQ
+finally:
+    consumer.close()                                 # leave the group cleanly so partitions rebalance fast</code></pre>
+    <div class="what"><b>say this</b>Commit after the side effect, idempotent handling instead of exactly-once transactions, a DLQ so one bad message can't stall a partition. <code>flush()</code> per message is safe but slow; batch it if throughput matters.</div>
+  </div>
+
+  <div class="window codewin">
+    <div class="window-head"><i style="background:var(--pink)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i><span class="fname">log_window.py · trim the log before the LLM sees it</span></div>
+<pre class="language-python"><code class="language-python">import re                                            # regular expressions
+from collections import deque                       # fixed-size buffer with O(1) append
+
+ERROR_RE = re.compile(r"ERROR|FATAL|BUILD FAILED|exit code [1-9]")  # compiled once, not per line
+
+def first_error_window(path: str, before: int = 20, after: int = 20) -&gt; list[str]:
+    context = deque(maxlen=before)                   # remembers only the last `before` lines
+    with open(path, errors="replace") as f:          # bad bytes won't crash the parser
+        for line in f:                               # streams the file; never f.read() a huge log
+            if ERROR_RE.search(line):                # the FIRST error is usually the root cause
+                window = [*context, line]            # lead-up lines plus the error line
+                for _ in range(after):               # collect a fixed number of lines after it
+                    nxt = next(f, None)              # continue from the same position in the file
+                    if nxt is None:                  # reached end of file
+                        break                        # stop collecting
+                    window.append(nxt)               # add the trailing line
+                return window                        # ~41 lines instead of the whole log
+            context.append(line)                     # not an error: keep it as possible context
+    return list(context)                             # no match: return the log's tail</code></pre>
+    <div class="what"><b>say this</b>This is the cost-vs-context-window tradeoff in code: fewer tokens, lower latency, less noise for the model to latch onto.</div>
+  </div>
+
+  <h3 class="sub">React: rapid review checklist</h3>
+  <div class="tbl-scroll">
+    <table class="t">
+      <thead><tr><th scope="col">Look for</th><th scope="col">Fix</th></tr></thead>
+      <tbody>
+        <tr><td><code>setText(text + chunk)</code> inside a stream loop</td><td>Functional update <code>setText(prev =&gt; prev + chunk)</code> (stale closure)</td></tr>
+        <tr><td><code>useEffect</code> with fetch and no cleanup</td><td><code>AbortController</code>, abort in the cleanup function</td></tr>
+        <tr><td>Missing or wrong dependency array</td><td>Include every value the effect reads</td></tr>
+        <tr><td>Array index as <code>key</code> on a list that changes</td><td>Stable IDs</td></tr>
+        <tr><td><code>dangerouslySetInnerHTML</code> with model output</td><td>Render as text, or sanitize markdown output (DOMPurify)</td></tr>
+        <tr><td>API keys bundled to the client or kept in <code>localStorage</code></td><td>Keys stay server-side; the browser calls your backend with a session</td></tr>
+        <tr><td>"Approve remediation" hidden by role in the UI only</td><td>Enforce authorization on the server; hiding isn't access control</td></tr>
+        <tr><td>Re-render on every token</td><td>Batch chunks (e.g. flush once per animation frame) if the UI janks</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="window codewin">
+    <div class="window-head"><i style="background:var(--pink)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i><span class="fname">DiagnosisPanel.jsx · streaming an agent's diagnosis safely</span></div>
+<pre class="language-jsx"><code class="language-jsx">import { useEffect, useState } from "react";           // React hooks used below
+
+export function useStreamingDiagnosis(incidentId) {     // custom hook: owns the stream's lifecycle
+  const [text, setText] = useState("");                  // accumulated streamed text
+  const [status, setStatus] = useState("idle");          // idle | streaming | done | error
+
+  useEffect(() =&gt; {
+    if (!incidentId) return;                             // nothing selected yet, so don't fetch
+    const controller = new AbortController();            // lets us cancel the request on cleanup
+    setText("");                                         // clear output from the previous incident
+    setStatus("streaming");                              // drives the loading UI
+
+    (async () =&gt; {                                       // effects can't be async, so use an inner IIFE
+      try {
+        const res = await fetch(
+          `/api/incidents/${encodeURIComponent(incidentId)}/diagnosis`,  // our backend, never the LLM directly
+          { signal: controller.signal, credentials: "include" }          // abortable; session cookie, no API key
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);  // treat 4xx/5xx as errors
+        const reader = res.body.getReader();             // read the response body as a stream
+        const decoder = new TextDecoder();               // bytes -&gt; text
+        while (true) {                                   // read until the server closes the stream
+          const { done, value } = await reader.read();   // next chunk of bytes
+          if (done) break;                               // stream finished
+          const chunk = decoder.decode(value, { stream: true });  // handles characters split across chunks
+          setText(prev =&gt; prev + chunk);                 // BUG FIX: functional update avoids stale state
+        }
+        setStatus("done");                               // stream completed normally
+      } catch (err) {
+        if (err.name !== "AbortError") setStatus("error");  // aborts from cleanup are expected, not errors
+      }
+    })();
+
+    return () =&gt; controller.abort();                     // BUG FIX: cancel when the incident changes or unmounts
+  }, [incidentId]);                                      // re-run only when the selected incident changes
+
+  return { text, status };                               // the component only sees state, not stream details
+}
+
+export function DiagnosisPanel({ incidentId }) {
+  const { text, status } = useStreamingDiagnosis(incidentId);  // subscribe to the stream
+  return (
+    &lt;section aria-busy={status === "streaming"}&gt;         {/* accessible loading state */}
+      &lt;pre style={{ whiteSpace: "pre-wrap" }}&gt;{text}&lt;/pre&gt;  {/* rendered as text, so model output can't inject HTML */}
+      {status === "error" &amp;&amp; &lt;p role="alert"&gt;Stream failed. Retry.&lt;/p&gt;}  {/* visible failure */}
+    &lt;/section&gt;
+  );
+}</code></pre>
+    <div class="what"><b>say this</b>The stale closure and the missing abort are the two classic planted bugs; rendering model output as text closes the XSS hole; the browser never holds the OpenAI key.</div>
+  </div>
+
+  <h3 class="sub">Under pressure: Restate, Trace, Rank, Prove</h3>
+  <ol class="how-grid">
+    <li class="pillar" style="--c:var(--cyan)"><b>Restate</b><span>Say what the code should do, its inputs and outputs. It buys thinking time and catches misreads. About 30 seconds.</span></li>
+    <li class="pillar" style="--c:var(--yellow)"><b>Trace</b><span>Walk the happy path once, then the edges: empty input, an error mid-way, a duplicate message, concurrent calls, a huge input.</span></li>
+    <li class="pillar" style="--c:var(--pink)"><b>Rank</b><span>Name everything, then fix in order: correctness, security, reliability, performance, readability. "I'll note the naming, but fix the data loss first."</span></li>
+    <li class="pillar" style="--c:var(--green)"><b>Prove</b><span>Run it or write one quick test for the bug you fixed, then explain the tradeoff you made.</span></li>
+  </ol>
+</section>
+
+<!-- 5. GAPS -->
+<section class="sec" id="gaps">
+  <div class="sec-head">
+    <span class="sec-num">05</span>
+    <h2>Stack gaps and reframing</h2>
+    <p class="sec-lead">The two real gaps are Kafka, which the manager named, and Java. Own them plainly, then show the transferable mechanics. Never claim production experience you don't have.</p>
+  </div>
+
+  <div class="gapgrid">
+    <div class="gapcard">
+      <h3>Gap 1: Kafka</h3>
+      <p class="have">you have: Data Firehose + Lambda + S3 lake (contact-center analytics), SQS, RabbitMQ, async pipelines</p>
+      <blockquote>"I haven't run Kafka in production, but I've built streaming pipelines on AWS. On the contact-center platform, instrumented conversation logs, Contact Lens data and Contact Trace Records streamed through Amazon Data Firehose, encrypted with a customer-managed KMS key, through a Lambda transform into an S3 data lake that product owners explored in QuickSight. I also used SQS to decouple eval runs, and it held the backlog through a real CI outage. So I've handled producers, transforms, delivery and back-pressure. The difference I'd design around is that Kafka is a durable, replayable log, not a delivery pipe: ordering is per partition, so I'd key by node ID; consumers track offsets, so I commit only after the side effect; and replay becomes a feature, which here means re-running an improved agent against last week's failures as an eval."</blockquote>
+      <div class="cold"><span>topic</span><span>partition</span><span>offset</span><span>consumer group</span><span>rebalancing</span><span>key ordering</span><span>enable.auto.commit=false</span><span>DLQ</span><span>idempotent producer</span><span>retention + replay</span></div>
+    </div>
+    <div class="gapcard">
+      <h3>Gap 2: Java</h3>
+      <p class="have">you have: Python, TypeScript, Node.js, gRPC/GraphQL contracts</p>
+      <blockquote>"My backend depth is Python and TypeScript, and the manager mentioned Python and Kafka for the current product, so I'd expect to be productive on day one there. For Java services the concepts carry over directly: typed service contracts, which I've designed in gRPC and GraphQL, dependency injection, and microservice boundaries. I'd review Java immediately and be writing it within weeks."</blockquote>
+    </div>
+  </div>
+
+  <h3 class="sub">Your streaming experience, mapped to Kafka</h3>
+  <div class="tbl-scroll">
+    <table class="t">
+      <thead><tr><th scope="col">What you built</th><th scope="col">Kafka equivalent</th><th scope="col">Where they differ</th></tr></thead>
+      <tbody>
+        <tr><td>Conversation logs, Contact Lens and Contact Trace Records into Data Firehose</td><td>Producers writing to a topic, with a sink connector landing data in a lake</td><td>Firehose is a managed delivery pipe: no replay, no consumer groups, no partition ordering. Kafka keeps the log.</td></tr>
+        <tr><td>Lambda transform inside the stream</td><td>A stream processor or consumer that enriches events in flight</td><td>Kafka consumers track their own offsets, so you control when a message counts as done.</td></tr>
+        <tr><td>S3 data lake, then Glue, Athena and QuickSight</td><td>Sink connector to a lake, with downstream analytics</td><td>With Kafka the raw log can also be re-read, not just the landed copy.</td></tr>
+        <tr><td>KMS customer-managed key on the stream</td><td>TLS in transit plus encryption at rest and ACLs on the cluster</td><td>Same data-protection goal; Kafka needs you to configure it per cluster.</td></tr>
+        <tr><td>SQS between "create run" and "execute run"</td><td>A topic with a consumer group and a dead-letter topic</td><td>SQS deletes a message once acknowledged; Kafka retains it, so you can reprocess.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">If they push on "so what is Kafka's AWS equivalent": Kinesis Data Streams or MSK are the log-style services; Firehose is the managed delivery layer you've already shipped.</p>
+
+  <h3 class="sub">Smaller gaps in one line</h3>
+  <div class="tbl-scroll">
+    <table class="t">
+      <thead><tr><th scope="col">Their tool</th><th scope="col">Your bridge</th></tr></thead>
+      <tbody>
+        <tr><td>AutoGen / CrewAI</td><td>"Production LangGraph and LangChain; AutoGen's group chat and CrewAI's role/task model are the same supervisor and specialist patterns with different APIs."</td></tr>
+        <tr><td>Azure OpenAI</td><td>"OpenAI and Amazon Bedrock in production; Azure OpenAI is the same models behind enterprise auth, deployments and content filters."</td></tr>
+        <tr><td>On-prem build farms, node operations</td><td>"I set up a Jenkinsfile alongside the GitLab CI, GitHub Actions and CodeBuild integrations on the eval pipeline, so the pipeline side is familiar. What's new is operating the farm's nodes, and that is the 20% I'd learn from the team's runbooks and then encode into the diagnosis agent."</td></tr>
+        <tr><td>Splunk / Grafana / Dynatrace</td><td>"On the contact-center platform I ran observability in CloudWatch: log groups, dashboards and alarms for violations, Lambda errors and pipeline failures, with conversation logs feeding the analytics lake. That's the same job Grafana and Splunk do here. The query language and panels change; the RCA method doesn't."</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pattern">Any gap: <span>honest status</span><span>closest thing you've shipped</span><span>the one difference you'd design around</span><span>how fast you'd ramp</span></div>
+</section>
+
+<!-- 6. ASK -->
+<section class="sec" id="ask">
+  <div class="sec-head">
+    <span class="sec-num">06</span>
+    <h2>Questions to ask the panel</h2>
+    <p class="sec-lead">One per interviewer if time is short. Each signals you're already thinking like the owner of this platform.</p>
+  </div>
+  <ol class="asks">
+    <li><h4>Autonomy and blast radius</h4><p>"Where is the line today between what the agent fixes on its own and what needs a human? Is it set per action type, per node pool, or by model confidence, and how do you roll back a remediation that made a node worse?"</p></li>
+    <li><h4>Evaluation and the learning loop</h4><p>"How do you measure whether the agent's root-cause call was right? Is there a labeled set of historical build failures to replay as an offline eval before a new agent or prompt version ships, and does the resolution memory feed back into it?"</p></li>
+    <li><h4>Data path and constraints</h4><p>"With the build farm on-prem and Azure OpenAI in the loop, what's the biggest bottleneck right now: getting clean log and node-metric signal into Kafka, the latency or cost of model calls, or the approval path to act on production build infrastructure?"</p></li>
+  </ol>
+  <p class="close">"Self-healing infrastructure is the problem I've been building toward: guarded agents that act, verify and learn. I'd love to bring that here."</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Michael Legemah · Principal AI Engineer</span>
+    <span><a href="https://mleg.tech" target="_blank" rel="noopener">mleg.tech</a> &nbsp; <a href="https://github.com/MikeLegemah5799" target="_blank" rel="noopener">GitHub</a> &nbsp; <a href="https://linkedin.com/in/michaellegemah" target="_blank" rel="noopener">LinkedIn</a></span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script>
+(function () {
+  try { if (window.Prism) Prism.highlightAll(); } catch (e) { /* plain code stays readable */ }
+
+  var cards = Array.prototype.slice.call(document.querySelectorAll('details.card'));
+  var expand = document.getElementById('expandAll');
+  function syncExpand() { expand.textContent = cards.every(function (c) { return c.open; }) ? 'Close all' : 'Open all'; }
+  expand.addEventListener('click', function () {
+    var openAll = !cards.every(function (c) { return c.open; });
+    cards.forEach(function (c) { c.open = openAll; });
+    syncExpand();
+  });
+  cards.forEach(function (c) { c.addEventListener('toggle', syncExpand); });
+  syncExpand();
+
+  var gapsBtn = document.getElementById('gapsBtn');
+  gapsBtn.addEventListener('click', function () {
+    var on = gapsBtn.getAttribute('aria-pressed') !== 'true';
+    gapsBtn.setAttribute('aria-pressed', String(on));
+    document.body.classList.toggle('gaps-only', on);
+    if (on) cards.forEach(function (c) { if (c.querySelector('.gap')) c.open = true; });
+    syncExpand();
+  });
+
+  // open a card when a link points inside it
+  function openTarget() {
+    var el = location.hash && document.getElementById(location.hash.slice(1));
+    if (el) { var d = el.closest('details'); if (d) d.open = true; }
+  }
+  window.addEventListener('hashchange', openTarget); openTarget();
+
+  // highlight the current section in the toolbar
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toolbar nav a'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id); });
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    links.forEach(function (a) { var s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
